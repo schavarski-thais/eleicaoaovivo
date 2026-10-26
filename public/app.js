@@ -262,6 +262,105 @@
   });
   document.addEventListener('click', (ev) => { if (!ev.target.closest('#mapa')) esconderTooltip(); });
 
+  // ---------- Contribuição de estados e regiões ----------
+  const CORES_REGIAO = { Norte: '#5cc2b4', Nordeste: '#f2b84b', 'Centro-Oeste': '#b39ddb', Sudeste: '#94a3b8',
+    Sul: '#9ccc65', Exterior: '#d0d4da' };
+  const fmtMi = (v) => {
+    const a = Math.abs(v);
+    if (a >= 1e6) return (a / 1e6).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' mi';
+    return a >= 1e4 ? Math.round(a / 1e3).toLocaleString('pt-BR') + ' mil' : fmtInt.format(a);
+  };
+  const ladoDe = (saldo) => (saldo > 0 ? 'a' : saldo < 0 ? 'b' : null);
+  const nomeLado = (l) => (l === 'a' ? CAND_A.rotulo : CAND_B.rotulo);
+  const votosDe = (r) => {
+    const s = resumo(r);
+    return s ? { a: s.a.votos, b: s.b.votos, saldo: s.difVotos } : { a: 0, b: 0, saldo: 0 };
+  };
+
+  // Uma linha de barra horizontal de ini até fim, numa escala dom = [mín, máx] com o zero marcado.
+  function linhaBarra({ rotulo, titulo, ini, fim, dom, valor, classe = '' }) {
+    const pos = (v) => ((v - dom[0]) / (dom[1] - dom[0])) * 100;
+    const l = ladoDe(valor);
+    const esq = pos(Math.min(ini, fim));
+    const larg = Math.max(pos(Math.max(ini, fim)) - esq, 0.4);
+    return `<div class="cb-linha ${classe}" title="${titulo}">
+      <span class="cb-rotulo">${rotulo}</span>
+      <span class="cb-trilho"><i class="cb-zero" style="left:${pos(0)}%"></i><i class="cb-barra" style="left:${esq}%;width:${larg}%;background:var(--${l || 'vazio'})"></i></span>
+      <span class="cb-valor" style="color:var(--${l || 'suave'})">${l ? '+' : ''}${fmtMi(valor)}</span></div>`;
+  }
+
+  function renderContribuicao() {
+    const br = votosDe(dados.brasil);
+    const regioes = REGIOES.map(([nome, ufs]) => {
+      const ag = agregar(ufs);
+      return { nome, eleitorado: ag ? ag.eleitorado.total : 0, ...votosDe(ag) };
+    });
+    if (dados.exterior) regioes.push({ nome: 'Exterior', eleitorado: dados.exterior.eleitorado.total, ...votosDe(dados.exterior) });
+    const estados = Object.keys(dados.estados).map((uf) => ({ uf, ...votosDe(dados.estados[uf]) }));
+    if (dados.exterior) estados.push({ uf: 'zz', ...votosDe(dados.exterior) });
+    const detalhe = (nome, v) => `${nome}: ${CAND_A.rotulo} ${fmtInt.format(v.a)} × ${CAND_B.rotulo} ${fmtInt.format(v.b)}` +
+      (br.saldo ? ` · ${fmtPct((v.saldo / br.saldo) * 100, 1)} da margem nacional` : '');
+
+    // Resumo em texto
+    const lid = ladoDe(br.saldo);
+    if (!lid) {
+      $('contribResumo').textContent = br.a + br.b ? 'Empate na soma nacional.' : 'Aguardando votos apurados.';
+    } else {
+      const outro = lid === 'a' ? 'b' : 'a';
+      const sinal = lid === 'a' ? 1 : -1;
+      const pelo = (lista, s) => [...lista].sort((x, y) => s * (y.saldo - x.saldo))[0];
+      const top = pelo(regioes, sinal);
+      const resto = br.saldo - top.saldo;
+      const ufLid = pelo(estados, sinal), ufOutro = pelo(estados, -sinal);
+      const cor = (l, t) => `<b style="color:var(--${l})">${t}</b>`;
+      let txt = `${cor(lid, nomeLado(lid))} ${dados.brasil.totalizado ? 'venceu' : 'lidera'} por <b>${fmtInt.format(Math.abs(br.saldo))}</b> votos. `;
+      if (Math.abs(top.saldo) > Math.abs(br.saldo)) {
+        const vezes = (top.saldo / br.saldo).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+        txt += `Só o ${top.nome} deu a ${nomeLado(lid)} um saldo de <b>${fmtMi(top.saldo)}</b>, ${vezes} vezes a margem final`;
+        txt += ladoDe(resto) === outro
+          ? `; somadas, as demais regiões deram a ${cor(outro, nomeLado(outro))} um saldo de <b>${fmtMi(resto)}</b>. ` : '. ';
+      } else {
+        txt += `O ${top.nome} foi a região que mais contribuiu, com saldo de <b>${fmtMi(top.saldo)}</b> ` +
+          `(${fmtPct((top.saldo / br.saldo) * 100, 0)} da margem). `;
+      }
+      txt += `Maior saldo de ${nomeLado(lid)}: ${NOMES[ufLid.uf]} (<b>${fmtMi(ufLid.saldo)}</b>, ` +
+        `${fmtPct((ufLid.saldo / br.saldo) * 100, 0)} da margem).`;
+      if (ladoDe(ufOutro.saldo) === outro) txt += ` Maior saldo de ${nomeLado(outro)}: ${NOMES[ufOutro.uf]} (<b>${fmtMi(ufOutro.saldo)}</b>).`;
+      $('contribResumo').innerHTML = txt;
+    }
+
+    // Ponte: saldo de cada região somado até o resultado nacional
+    const passos = [...regioes].sort((x, y) => y.saldo - x.saldo);
+    let acc = 0;
+    const ponte = passos.map((r) => { const ini = acc; acc += r.saldo; return { r, ini, fim: acc }; });
+    const ext = [0, ...ponte.flatMap((p) => [p.ini, p.fim])];
+    const dom = [Math.min(...ext), Math.max(...ext)];
+    if (dom[0] === dom[1]) dom[1] = dom[0] + 1;
+    $('ponte').innerHTML = ponte.map(({ r, ini, fim }) =>
+      linhaBarra({ rotulo: r.nome, titulo: detalhe(r.nome, r), ini, fim, dom, valor: r.saldo })).join('') +
+      linhaBarra({ rotulo: 'Resultado', titulo: detalhe('Brasil', br), ini: 0, fim: acc, dom, valor: acc, classe: 'total' });
+
+    // Composição dos votos de cada candidato por região, comparada ao eleitorado
+    const totE = regioes.reduce((t, r) => t + r.eleitorado, 0);
+    const pilha = (rotulo, campo, total) => `<div class="cb-pilha"><div class="cb-pilha-rot">${rotulo}</div><div class="cb-pilha-barra">` +
+      regioes.map((r) => {
+        const p = total ? (r[campo] / total) * 100 : 0;
+        return `<i style="width:${p}%;background:${CORES_REGIAO[r.nome]}" title="${r.nome}: ${fmtPct(p, 1)}">${p >= 8 ? fmtPct(p, 0) : ''}</i>`;
+      }).join('') + '</div></div>';
+    $('origem').innerHTML = pilha(`Votos de ${CAND_A.rotulo}`, 'a', br.a) + pilha(`Votos de ${CAND_B.rotulo}`, 'b', br.b) +
+      pilha('Eleitorado (peso)', 'eleitorado', totE);
+    $('origemLegenda').innerHTML = regioes.map((r) => `<span><i style="background:${CORES_REGIAO[r.nome]}"></i>${r.nome}</span>`).join('');
+
+    // Saldo de cada estado: primeiro os de A, depois os de B, cada grupo do maior para o menor saldo
+    const grupo = (e) => (e.saldo > 0 ? 0 : e.saldo < 0 ? 1 : 2);
+    estados.sort((x, y) => grupo(x) - grupo(y) || Math.abs(y.saldo) - Math.abs(x.saldo));
+    const dom2 = [0, Math.max(1, ...estados.map((e) => Math.abs(e.saldo)))];
+    $('saldoEstados').innerHTML = estados.map((e) => linhaBarra({
+      rotulo: `<span class="uf">${e.uf === 'zz' ? 'EXT' : e.uf.toUpperCase()}</span><span class="nome-uf">${NOMES[e.uf]}</span>`,
+      titulo: detalhe(NOMES[e.uf], e), ini: 0, fim: Math.abs(e.saldo), dom: dom2, valor: e.saldo,
+    })).join('');
+  }
+
   // ---------- Ciclo de atualização ----------
   async function atualizar() {
     let intervalo = INTERVALO_PADRAO;
@@ -269,7 +368,7 @@
       const res = await fetch('/api/apuracao', { cache: 'no-store' });
       dados = await res.json();
       intervalo = dados.intervaloSegundos || INTERVALO_PADRAO;
-      renderStatus(); renderPlacar(); renderMapa(); renderTabela();
+      renderStatus(); renderPlacar(); renderMapa(); renderTabela(); renderContribuicao();
     } catch (err) {
       $('atualizado').textContent = 'Falha ao atualizar — tentando de novo…';
     }

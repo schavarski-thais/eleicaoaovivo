@@ -11,6 +11,8 @@ Apuração em tempo real do 2º turno presidencial de 2026 com dados oficiais do
   seções apuradas, comparecimento, abstenção, brancos e nulos.
 - Tabela agrupada por região com peso de cada estado no eleitorado, % apurado, % de cada candidato,
   vantagem (p.p. e votos) e abstenção — ordenável por qualquer coluna.
+- "De onde veio o resultado": saldo de votos de cada região somado até a margem nacional, composição dos
+  votos de cada candidato por região comparada ao eleitorado, e saldo de cada estado.
 - Atualiza sozinho a cada 15 segundos; funciona no celular e em modo escuro.
 
 ## Rodar localmente
