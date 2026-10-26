@@ -169,7 +169,7 @@ tbody tr.exterior td { text-transform: none; font-size: 14px; }
 .cb-pilha-rot { font-size: 13px; margin-bottom: 4px; }
 .cb-pilha-barra { display: flex; height: 24px; border-radius: 6px; overflow: hidden; background: var(--vazio); }
 .cb-pilha-barra i + i { box-shadow: inset 1px 0 0 var(--card); }
-.cb-pilha-barra i { display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 11px; font-weight: 700; color: #15181d; overflow: hidden; white-space: nowrap; transition: width .6s ease; }
+.cb-pilha-barra i { display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 11px; font-weight: 700; color: #fff; overflow: hidden; white-space: nowrap; transition: width .6s ease; }
 .cb-legenda { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 12px; font-size: 12px; color: var(--suave); }
 .cb-legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
 @media (prefers-reduced-motion: reduce) { .cb-barra, .cb-pilha-barra i { transition: none; } }

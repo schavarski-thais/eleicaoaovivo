@@ -263,9 +263,9 @@
   document.addEventListener('click', (ev) => { if (!ev.target.closest('#mapa')) esconderTooltip(); });
 
   // ---------- Contribuição de estados e regiões ----------
-  // Tons suaves das cores usuais dos mapas escolares de regiões do IBGE
-  const CORES_REGIAO = { Norte: '#9bb89f', Nordeste: '#e3cd8e', 'Centro-Oeste': '#dbb08a', Sudeste: '#d1a6a1',
-    Sul: '#a9abcb', Exterior: '#c9ccd1' };
+  // Tons sóbrios e dessaturados, longe do vermelho e do azul dos candidatos
+  const CORES_REGIAO = { Norte: '#5b7f62', Nordeste: '#9c8440', 'Centro-Oeste': '#a07650', Sudeste: '#7d6b8a',
+    Sul: '#5f7f86', Exterior: '#8a8f96' };
   const fmtMi = (v) => {
     const a = Math.abs(v);
     if (a >= 1e6) return (a / 1e6).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' mi';
