@@ -1,3 +1,5 @@
+![Eleição ao Vivo](docs/eleicaoaovivo.png)
+
 # Eleição ao Vivo · Presidente 2026
 
 Apuração em tempo real do 2º turno presidencial de 2026 com dados oficiais do TSE.
