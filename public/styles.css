@@ -1,0 +1,184 @@
+:root {
+  --bg: #f4f5f7;
+  --card: #ffffff;
+  --texto: #15181d;
+  --suave: #5f6670;
+  --linha: #e3e6ea;
+  --vazio: #d5d9df;
+  --a: #d7263d;        /* Lula */
+  --b: #1e5aa8;        /* Flávio */
+  --contorno: #ffffff;
+  --sombra: 0 1px 2px rgba(16, 24, 40, .06), 0 1px 3px rgba(16, 24, 40, .08);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1216; --card: #181c22; --texto: #eef0f3; --suave: #9aa3ad; --linha: #2a3038;
+    --vazio: #3a414b; --contorno: #0f1216;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1216; --card: #181c22; --texto: #eef0f3; --suave: #9aa3ad; --linha: #2a3038;
+  --vazio: #3a414b; --contorno: #0f1216;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--texto);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+h1, h2 { margin: 0; }
+h1 { font-size: 22px; letter-spacing: -.01em; }
+h2 { font-size: 16px; }
+a { color: inherit; }
+
+.topo {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+  max-width: 1280px; margin: 0 auto; padding: 20px 16px 8px;
+}
+.turno { font-size: 13px; font-weight: 600; background: var(--texto); color: var(--bg); padding: 2px 8px; border-radius: 99px; vertical-align: middle; }
+.sub { margin: 2px 0 0; color: var(--suave); font-size: 13px; }
+.status { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--suave); }
+.ao-vivo { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--a); letter-spacing: .04em; }
+.ao-vivo.final { color: var(--suave); }
+.ponto { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulsa 1.6s infinite; }
+.ao-vivo.final .ponto { animation: none; }
+@keyframes pulsa { 50% { opacity: .25; } }
+
+main { max-width: 1280px; margin: 0 auto; padding: 8px 16px 24px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+
+/* Placar nacional */
+.placar {
+  background: var(--card); border-radius: 14px; box-shadow: var(--sombra); padding: 20px;
+  display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 20px; align-items: center;
+}
+.cand { display: flex; flex-direction: column; gap: 2px; }
+.cand-b { text-align: right; align-items: flex-end; }
+.cand .nome { font-weight: 700; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+.cand .partido { color: var(--suave); font-size: 13px; }
+.cand .pct { font-size: 44px; font-weight: 800; line-height: 1.05; letter-spacing: -.02em; }
+.cand-a .pct { color: var(--a); }
+.cand-b .pct { color: var(--b); }
+.cand .votos { color: var(--suave); font-size: 14px; }
+.estados-lider { margin-top: 6px; font-size: 13px; color: var(--suave); }
+.estados-lider b { font-size: 20px; color: var(--texto); margin-right: 2px; }
+.cand-a .estados-lider b { color: var(--a); }
+.cand-b .estados-lider b { color: var(--b); }
+.selo { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 99px; color: #fff; }
+.cand-a .selo { background: var(--a); }
+.cand-b .selo { background: var(--b); }
+
+.diferenca { text-align: center; font-size: 14px; color: var(--suave); margin-bottom: 8px; min-height: 20px; }
+.diferenca span { font-weight: 700; }
+.diferenca b { color: var(--texto); font-size: 17px; }
+.barra-votos { position: relative; display: flex; height: 26px; border-radius: 8px; overflow: hidden; background: var(--vazio); }
+.seg { height: 100%; transition: width .6s ease; }
+.seg-a { background: var(--a); }
+.seg-b { background: var(--b); margin-left: auto; }
+.marca50 { position: absolute; left: 50%; top: -4px; bottom: -4px; width: 2px; background: var(--texto); opacity: .55; }
+.apuracao { margin-top: 14px; }
+.apuracao-rotulo { display: flex; justify-content: space-between; font-size: 13px; color: var(--suave); margin-bottom: 4px; }
+.apuracao-rotulo strong { color: var(--texto); font-size: 15px; }
+.barra-apuracao { height: 8px; background: var(--linha); border-radius: 99px; overflow: hidden; }
+.barra-apuracao div { height: 100%; width: 0; background: var(--texto); transition: width .6s ease; }
+.detalhes { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; font-size: 12px; color: var(--suave); }
+
+/* Painel mapa + tabela */
+.painel { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 16px; align-items: start; }
+.mapa-box, .tabela-box { background: var(--card); border-radius: 14px; box-shadow: var(--sombra); padding: 16px; }
+.mapa-cab { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.contagem { font-size: 13px; color: var(--suave); }
+.contagem b.a { color: var(--a); } .contagem b.b { color: var(--b); }
+.mapa-wrap { position: relative; }
+#mapa { width: 100%; max-width: 680px; height: auto; display: block; margin: 8px auto 0; }
+#mapa path { stroke: var(--contorno); stroke-width: 1; cursor: pointer; transition: fill .4s ease; }
+#mapa path:hover, #mapa path.ativo { stroke: var(--texto); stroke-width: 2; }
+#mapa text { font-size: 10px; font-weight: 700; fill: #fff; pointer-events: none; text-anchor: middle; dominant-baseline: central; paint-order: stroke; stroke: rgba(0,0,0,.25); stroke-width: 2px; }
+#mapa text.sem-dado { fill: var(--suave); stroke: none; }
+
+.tooltip {
+  position: absolute; pointer-events: none; z-index: 5; min-width: 200px;
+  background: var(--card); color: var(--texto); border: 1px solid var(--linha); border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18); padding: 10px 12px; font-size: 13px;
+}
+.tooltip h3 { margin: 0 0 2px; font-size: 14px; }
+.tooltip .ap { color: var(--suave); font-size: 12px; margin-bottom: 6px; }
+.tooltip .linha { display: flex; justify-content: space-between; gap: 12px; }
+.tooltip .linha.a b { color: var(--a); } .tooltip .linha.b b { color: var(--b); }
+.mini { height: 5px; border-radius: 99px; background: var(--vazio); display: flex; overflow: hidden; margin: 6px 0 2px; }
+.mini .a { background: var(--a); } .mini .b { background: var(--b); margin-left: auto; }
+
+.legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; font-size: 12px; color: var(--suave); align-items: center; }
+.escala { display: inline-flex; align-items: center; gap: 6px; }
+.escala i { display: inline-block; width: 56px; height: 10px; border-radius: 3px; }
+
+/* Tabela */
+.tabela-scroll { overflow: auto; max-height: 640px; margin-top: 8px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 7px 6px; border-bottom: 1px solid var(--linha); text-align: left; white-space: nowrap; }
+th { position: sticky; top: 0; background: var(--card); font-size: 12px; color: var(--suave); font-weight: 600; cursor: pointer; user-select: none; }
+th.ord::after { content: " ▾"; } th.ord.asc::after { content: " ▴"; }
+.num { text-align: right; }
+td .uf { display: inline-block; width: 30px; font-weight: 700; }
+td.lider-a { color: var(--a); font-weight: 700; }
+td.lider-b { color: var(--b); font-weight: 700; }
+tbody tr { cursor: pointer; }
+tbody tr:hover, tbody tr.ativo { background: var(--bg); }
+td.peso, td.abst { color: var(--suave); }
+.vant small { display: block; font-size: 11px; color: var(--suave); font-weight: 400; }
+tbody tr.regiao td.abst { color: var(--texto); }
+tbody tr.regiao { cursor: default; background: var(--bg); }
+tbody tr.regiao td { font-weight: 700; border-top: 2px solid var(--linha); text-transform: uppercase; font-size: 12px; letter-spacing: .03em; }
+tbody tr.regiao td.num { text-transform: none; font-size: 13px; }
+tbody tr.regiao td.peso { color: var(--texto); }
+tbody tr.regiao:hover { background: var(--bg); }
+tbody tr.exterior td { text-transform: none; font-size: 14px; }
+.tag { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.ap-cel { display: inline-flex; align-items: center; gap: 6px; }
+.ap-cel .trilho { width: 44px; height: 5px; border-radius: 99px; background: var(--linha); overflow: hidden; }
+.ap-cel .trilho div { height: 100%; background: var(--suave); }
+
+footer { max-width: 1280px; margin: 0 auto; padding: 0 16px 28px; font-size: 12px; color: var(--suave); }
+button.link { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-decoration: underline; cursor: pointer; }
+
+/* Banner de cookies */
+.cookies {
+  position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 20; max-width: 720px; margin: 0 auto;
+  display: flex; align-items: center; gap: 16px;
+  background: var(--card); color: var(--texto); border: 1px solid var(--linha); border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25); padding: 14px 16px; font-size: 13px;
+}
+.cookies[hidden] { display: none; }
+.cookies p { margin: 0; flex: 1; }
+.cookies-botoes { display: flex; gap: 8px; flex-shrink: 0; }
+.cookies button {
+  font: inherit; font-weight: 600; border-radius: 8px; padding: 8px 16px; cursor: pointer;
+  border: 1px solid var(--texto); background: var(--texto); color: var(--bg);
+}
+.cookies button.sec { background: transparent; color: var(--texto); border-color: var(--linha); }
+@media (max-width: 640px) {
+  .cookies { flex-direction: column; align-items: stretch; gap: 10px; }
+  .cookies-botoes button { flex: 1; }
+}
+
+@media (min-width: 1101px) and (max-width: 1440px) {
+  .ap-cel .trilho { display: none; } /* tabela em meia tela: economiza espaço */
+}
+@media (max-width: 1100px) {
+  .painel { grid-template-columns: minmax(0, 1fr); }
+  .tabela-scroll { max-height: none; }
+}
+@media (max-width: 640px) {
+  .placar { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding: 16px; gap: 12px; }
+  .mapa-box, .tabela-box { padding: 12px; }
+  /* vantagem e abstenção continuam no tooltip do mapa e no placar */
+  th:nth-child(6), td:nth-child(6), th:nth-child(7), td:nth-child(7) { display: none; }
+  tbody tr:not(.regiao) .nome-uf { display: none; } /* no celular, só a sigla do estado */
+  .estados-lider b { font-size: 17px; }
+  .meio { grid-column: 1 / -1; order: 3; }
+  .cand .pct { font-size: 34px; }
+  .cand .nome { font-size: 15px; }
+  h1 { font-size: 19px; }
+  th, td { padding: 6px 5px; font-size: 13px; }
+  .ap-cel .trilho { display: none; }
+}

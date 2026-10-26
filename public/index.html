@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Apuração Presidente 2026</title>
+  <meta name="description" content="Apuração em tempo real do 2º turno da eleição presidencial de 2026, por estado, com dados oficiais do TSE.">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Google tag (gtag.js) — Google Analytics 4 com Consent Mode v2.
+       Sem cookies até o visitante aceitar no banner (ver app.js); anúncios sempre negados. -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    var consentimentoSalvo = null;
+    try { consentimentoSalvo = localStorage.getItem('consentimento-analytics'); } catch (e) {}
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: consentimentoSalvo === 'aceito' ? 'granted' : 'denied'
+    });
+    gtag('js', new Date());
+    gtag('config', 'G-0BHW0S3QSX');
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0BHW0S3QSX"></script>
+</head>
+<body>
+  <header class="topo">
+    <div>
+      <h1>Apuração · Presidente 2026 <span class="turno">2º turno</span></h1>
+      <p class="sub">Dados oficiais do TSE, atualizados automaticamente</p>
+    </div>
+    <div class="status">
+      <span class="ao-vivo" id="aoVivo"><span class="ponto"></span> AO VIVO</span>
+      <span id="atualizado">Carregando…</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="placar" aria-label="Resultado nacional">
+      <div class="cand cand-a" id="candA"></div>
+      <div class="meio">
+        <div class="diferenca" id="diferenca"></div>
+        <div class="barra-votos" aria-hidden="true">
+          <div class="seg seg-a" id="barraA"></div>
+          <div class="seg seg-b" id="barraB"></div>
+          <div class="marca50"></div>
+        </div>
+        <div class="apuracao">
+          <div class="apuracao-rotulo"><span>Seções apuradas</span><strong id="pctApurado">—</strong></div>
+          <div class="barra-apuracao"><div id="barraApurado"></div></div>
+          <div class="detalhes" id="detalhes"></div>
+        </div>
+      </div>
+      <div class="cand cand-b" id="candB"></div>
+    </section>
+
+    <section class="painel">
+      <div class="mapa-box">
+        <div class="mapa-cab">
+          <h2>Quem lidera em cada estado</h2>
+          <div class="contagem" id="contagem"></div>
+        </div>
+        <div class="mapa-wrap">
+          <svg id="mapa" role="img" aria-label="Mapa do Brasil por estado"></svg>
+          <div class="tooltip" id="tooltip" hidden></div>
+        </div>
+        <div class="legenda" id="legenda"></div>
+      </div>
+
+      <div class="tabela-box">
+        <h2>Por estado</h2>
+        <div class="tabela-scroll">
+          <table id="tabela">
+            <thead>
+              <tr>
+                <th data-ord="nome">Estado</th>
+                <th data-ord="peso" class="num" title="Participação no eleitorado nacional (TSE)">Peso</th>
+                <th data-ord="apurado" class="num">Apurado</th>
+                <th data-ord="a" class="num" id="thA">—</th>
+                <th data-ord="b" class="num" id="thB">—</th>
+                <th data-ord="margem" class="num">Vantagem</th>
+                <th data-ord="abstencao" class="num" title="Abstenção nas seções já apuradas">Abstenção</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Fonte: <a href="https://resultados.tse.jus.br" target="_blank" rel="noopener">Tribunal Superior Eleitoral (TSE)</a>.
+    Resultados parciais podem mudar até o fim da totalização. Percentuais sobre votos válidos.
+    “Peso” = participação de cada estado/região no eleitorado nacional (eleitores aptos, incluindo o exterior).
+    Abstenção calculada sobre as seções já apuradas.
+    · <button type="button" class="link" id="prefCookies">Preferências de cookies</button>
+  </footer>
+
+  <div class="cookies" id="cookies" role="dialog" aria-label="Aviso de cookies" hidden>
+    <p>Usamos cookies do Google Analytics apenas para contar visitas e entender como o site é usado.
+      Nenhum dado é usado para anúncios. Você pode mudar sua escolha a qualquer momento no rodapé.</p>
+    <div class="cookies-botoes">
+      <button type="button" class="sec" data-consent="recusado">Recusar</button>
+      <button type="button" data-consent="aceito">Aceitar</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

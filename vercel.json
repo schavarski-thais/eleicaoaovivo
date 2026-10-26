@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "",
+  "outputDirectory": "public",
+  "regions": ["gru1"],
+  "functions": {
+    "api/apuracao.js": { "maxDuration": 15 }
+  }
+}

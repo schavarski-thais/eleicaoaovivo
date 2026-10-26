@@ -1,0 +1,14 @@
+# Vercel (vínculo local do projeto e variáveis com tokens)
+.vercel
+.env*
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Sistema/editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/

@@ -1,0 +1,15 @@
+{
+  "name": "eleicaoaovivo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Apuração em tempo real do 2º turno presidencial 2026 com dados do TSE",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "teste-1turno": "node -e \"process.env.TSE_ELEICAO='6257';require('./server.js')\""
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}
