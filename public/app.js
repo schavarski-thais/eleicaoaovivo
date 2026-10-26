@@ -106,7 +106,7 @@
       $('detalhes').innerHTML = [
         `${fmtInt.format(br.secoes.totalizadas)} de ${fmtInt.format(br.secoes.total)} seções`,
         `Comparecimento ${fmtPct(br.eleitorado.percentualComparecimento)}`,
-        `Abstenção ${fmtPct(br.eleitorado.percentualAbstencao)} (${fmtInt.format(br.eleitorado.abstencao)} eleitores)`,
+        `Abstenção ${fmtPct(br.eleitorado.percentualAbstencao)}`,
         `Brancos ${fmtPct((br.votos.brancos / tv) * 100)}`,
         `Nulos ${fmtPct((br.votos.nulos / tv) * 100)}`,
       ].map((t) => `<span>${t}</span>`).join('');
@@ -263,8 +263,9 @@
   document.addEventListener('click', (ev) => { if (!ev.target.closest('#mapa')) esconderTooltip(); });
 
   // ---------- Contribuição de estados e regiões ----------
-  const CORES_REGIAO = { Norte: '#5cc2b4', Nordeste: '#f2b84b', 'Centro-Oeste': '#b39ddb', Sudeste: '#94a3b8',
-    Sul: '#9ccc65', Exterior: '#d0d4da' };
+  // Tons suaves das cores usuais dos mapas escolares de regiões do IBGE
+  const CORES_REGIAO = { Norte: '#9bb89f', Nordeste: '#e3cd8e', 'Centro-Oeste': '#dbb08a', Sudeste: '#d1a6a1',
+    Sul: '#a9abcb', Exterior: '#c9ccd1' };
   const fmtMi = (v) => {
     const a = Math.abs(v);
     if (a >= 1e6) return (a / 1e6).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' mi';
@@ -312,21 +313,20 @@
       const top = pelo(regioes, sinal);
       const resto = br.saldo - top.saldo;
       const ufLid = pelo(estados, sinal), ufOutro = pelo(estados, -sinal);
-      const cor = (l, t) => `<b style="color:var(--${l})">${t}</b>`;
-      let txt = `${cor(lid, nomeLado(lid))} ${dados.brasil.totalizado ? 'venceu' : 'lidera'} por <b>${fmtInt.format(Math.abs(br.saldo))}</b> votos. `;
-      if (Math.abs(top.saldo) > Math.abs(br.saldo)) {
-        const vezes = (top.saldo / br.saldo).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
-        txt += `Só o ${top.nome} deu a ${nomeLado(lid)} um saldo de <b>${fmtMi(top.saldo)}</b>, ${vezes} vezes a margem final`;
-        txt += ladoDe(resto) === outro
-          ? `; somadas, as demais regiões deram a ${cor(outro, nomeLado(outro))} um saldo de <b>${fmtMi(resto)}</b>. ` : '. ';
-      } else {
-        txt += `O ${top.nome} foi a região que mais contribuiu, com saldo de <b>${fmtMi(top.saldo)}</b> ` +
-          `(${fmtPct((top.saldo / br.saldo) * 100, 0)} da margem). `;
-      }
-      txt += `Maior saldo de ${nomeLado(lid)}: ${NOMES[ufLid.uf]} (<b>${fmtMi(ufLid.saldo)}</b>, ` +
-        `${fmtPct((ufLid.saldo / br.saldo) * 100, 0)} da margem).`;
-      if (ladoDe(ufOutro.saldo) === outro) txt += ` Maior saldo de ${nomeLado(outro)}: ${NOMES[ufOutro.uf]} (<b>${fmtMi(ufOutro.saldo)}</b>).`;
-      $('contribResumo').innerHTML = txt;
+      const nac = resumo(dados.brasil);
+      const parte = (v) => `${fmtPct((v / br.saldo) * 100, 0)} da margem`;
+      const item = (rotulo, v, nota) => `<div class="cr-item"><span class="cr-rot">${rotulo}</span>` +
+        `<span class="cr-val" style="color:var(--${ladoDe(v)})">+${fmtMi(v)}</span><span class="cr-nota">${nota}</span></div>`;
+      const vezes = (top.saldo / br.saldo).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+      const itens = [item(top.nome, top.saldo, `para ${nomeLado(lid)} · ` +
+        (Math.abs(top.saldo) > Math.abs(br.saldo) ? `${vezes} vezes a margem final` : parte(top.saldo)))];
+      if (resto) itens.push(item('Demais regiões somadas', resto, `para ${nomeLado(ladoDe(resto))}`));
+      itens.push(item(NOMES[ufLid.uf], ufLid.saldo, `maior saldo de ${nomeLado(lid)} · ${parte(ufLid.saldo)}`));
+      if (ladoDe(ufOutro.saldo) === outro) itens.push(item(NOMES[ufOutro.uf], ufOutro.saldo, `maior saldo de ${nomeLado(outro)}`));
+      $('contribResumo').innerHTML =
+        `<p class="cr-lead"><b style="color:var(--${lid})">${nomeLado(lid)}</b> ${dados.brasil.totalizado ? 'venceu' : 'lidera'} por ` +
+        `<b>${fmtInt.format(Math.abs(br.saldo))}</b> votos (${fmtPct(nac[lid].percentual)} a ${fmtPct(nac[outro].percentual)} dos válidos). ` +
+        `Veja de onde veio essa diferença:</p><div class="cr-itens">${itens.join('')}</div>`;
     }
 
     // Ponte: saldo de cada região somado até o resultado nacional
